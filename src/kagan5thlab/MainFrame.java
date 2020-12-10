@@ -109,7 +109,7 @@ public class MainFrame extends JFrame {
             DataOutputStream out = new DataOutputStream(new FileOutputStream(selectedFile));
             for(int i = 0; i < data.size(); i++ )
             {
-
+                forSaveGraph[i][0] = ;
             }
             for(int i = 0; i < data.size(); ++i) {
                 out.writeDouble((Double)this.data.get(i));

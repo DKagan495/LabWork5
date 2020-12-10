@@ -8,11 +8,7 @@ package kagan5thlab;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -28,8 +24,11 @@ public class MainFrame extends JFrame {
     private static final int HEIGHT = 500;
     private JFileChooser fileChooser = null;
     private JMenuItem resetGraphicsMenuItem;
+    private JMenuItem saveToGraphicsMenuItem;
     private GraphicsDisplay display = new GraphicsDisplay();
     private boolean fileLoaded = false;
+    private ArrayList data;
+    private double[][] forSaveGraph;
 
     public MainFrame() {
         super("Обработка событий от мыши");
@@ -58,25 +57,44 @@ public class MainFrame extends JFrame {
                 MainFrame.this.display.reset();
             }
         };
+        Action saveToGraphicsAction = new AbstractAction("Сохранить данные для построения графика") {
+            public void actionPerformed(ActionEvent event) {
+                if (MainFrame.this.fileChooser == null) {
+                    MainFrame.this.fileChooser = new JFileChooser();
+                    MainFrame.this.fileChooser.setCurrentDirectory(new File("."));
+                }
+
+                if (MainFrame.this.fileChooser.showSaveDialog(MainFrame.this) == 0) {
+                }
+
+                MainFrame.this.saveToGraphicsFile(MainFrame.this.fileChooser.getSelectedFile());
+            }
+        };
+        this.saveToGraphicsMenuItem = fileMenu.add(saveToGraphicsAction);
+        this.saveToGraphicsMenuItem.setEnabled(false);
         this.resetGraphicsMenuItem = fileMenu.add(resetGraphicsAction);
         this.resetGraphicsMenuItem.setEnabled(false);
         this.getContentPane().add(this.display, "Center");
     }
-
     protected void openGraphics(File selectedFile) {
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(selectedFile));
             ArrayList graphicsData = new ArrayList(50);
-
+            data = new ArrayList(50);
+            int i = 0;
             while(in.available() > 0) {
                 Double x = in.readDouble();
                 Double y = in.readDouble();
                 graphicsData.add(new Double[]{x, y});
+                data.add(new Double[]{x, y});
+                i++;
             }
-
+            System.out.println(i);
+            forSaveGraph = new double[i][2];
             if (graphicsData.size() > 0) {
                 this.fileLoaded = true;
                 this.resetGraphicsMenuItem.setEnabled(true);
+                this.saveToGraphicsMenuItem.setEnabled(true);
                 this.display.displayGraphics(graphicsData);
             }
 
@@ -85,6 +103,22 @@ public class MainFrame extends JFrame {
         } catch (IOException var7) {
             JOptionPane.showMessageDialog(this, "Ошибка чтения координат точек из файла", "Ошибка загрузки данных", 2);
         }
+    }
+    protected void saveToGraphicsFile(File selectedFile) {
+        try {
+            DataOutputStream out = new DataOutputStream(new FileOutputStream(selectedFile));
+            for(int i = 0; i < data.size(); i++ )
+            {
+
+            }
+            for(int i = 0; i < data.size(); ++i) {
+                out.writeDouble((Double)this.data.get(i));
+            }
+
+            out.close();
+        } catch (Exception var4) {
+        }
+
     }
 
     public static void main(String[] args) {

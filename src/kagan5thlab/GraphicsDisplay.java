@@ -32,6 +32,8 @@ public class GraphicsDisplay extends JPanel {
     private double maxX;
     private double minY;
     private double maxY;
+    private double nowX, nowY;
+    private double scale;
     private double[][] viewport = new double[2][2];
     private ArrayList<double[][]> undoHistory = new ArrayList(5);
     private double scaleX;
@@ -45,6 +47,7 @@ public class GraphicsDisplay extends JPanel {
     private static DecimalFormat formatter = (DecimalFormat)NumberFormat.getInstance();
     private boolean scaleMode = false;
     private boolean changeMode = false;
+    private boolean toShowCoordinates = false;
     private double[] originalPoint = new double[2];
     private java.awt.geom.Rectangle2D.Double selectionRect = new java.awt.geom.Rectangle2D.Double();
 
@@ -55,7 +58,7 @@ public class GraphicsDisplay extends JPanel {
         this.markerStroke = new BasicStroke(1.0F, 0, 0, 10.0F, (float[])null, 0.0F);
         this.selectionStroke = new BasicStroke(1.0F, 0, 0, 10.0F, new float[]{10.0F, 10.0F}, 0.0F);
         this.axisFont = new Font("Serif", 1, 36);
-        this.labelsFont = new Font("Serif", 0, 10);
+        this.labelsFont = new Font("Serif", 0, 16);
         formatter.setMaximumFractionDigits(5);
         this.addMouseListener(new GraphicsDisplay.MouseHandler());
         this.addMouseMotionListener(new GraphicsDisplay.MouseMotionHandler());
@@ -102,6 +105,7 @@ public class GraphicsDisplay extends JPanel {
         super.paintComponent(g);
         this.scaleX = this.getSize().getWidth() / (this.viewport[1][0] - this.viewport[0][0]);
         this.scaleY = this.getSize().getHeight() / (this.viewport[0][1] - this.viewport[1][1]);
+        scale = Math.min(scaleX, scaleY);
         if (this.graphicsData != null && this.graphicsData.size() != 0) {
             Graphics2D canvas = (Graphics2D)g;
             this.paintGrid(canvas);
@@ -110,6 +114,9 @@ public class GraphicsDisplay extends JPanel {
             this.paintMarkers(canvas);
             this.paintLabels(canvas);
             this.paintSelection(canvas);
+            if (toShowCoordinates) {
+                showPointCoordinates(canvas);
+            }
         }
     }
 
@@ -279,7 +286,9 @@ public class GraphicsDisplay extends JPanel {
         }
 
     }
-
+    protected Point2D.Double pointToXY(double x, double y) {
+        return new Point2D.Double((x + minX*scaleX) / scaleX, (maxY*scale - y) / scale);
+    }
     protected java.awt.geom.Point2D.Double translateXYtoPoint(double x, double y) {
         double deltaX = x - this.viewport[0][0];
         double deltaY = this.viewport[0][1] - y;
@@ -288,6 +297,9 @@ public class GraphicsDisplay extends JPanel {
 
     protected double[] translatePointToXY(int x, int y) {
         return new double[]{this.viewport[0][0] + (double)x / this.scaleX, this.viewport[0][1] - (double)y / this.scaleY};
+    }
+    protected void showPointCoordinates(Graphics2D canvas) {
+        canvas.drawString(String.valueOf((float)pointToXY(nowX, nowY).getX() + "; " + (float)pointToXY(nowX, nowY).getY()), (float) nowX, (float) nowY);
     }
 
     protected int findSelectedPoint(int x, int y) {
@@ -343,8 +355,14 @@ public class GraphicsDisplay extends JPanel {
                     GraphicsDisplay.this.setCursor(Cursor.getPredefinedCursor(5));
                     GraphicsDisplay.this.selectionRect.setFrame((double)ev.getX(), (double)ev.getY(), 1.0D, 1.0D);
                 }
-
             }
+            if (ev.getButton() == 2) {
+                GraphicsDisplay.this.toShowCoordinates = true;
+                nowX = ev.getX();
+                nowY = ev.getY();
+                GraphicsDisplay.this.repaint();
+            }
+
         }
 
         public void mouseReleased(MouseEvent ev) {
@@ -361,6 +379,10 @@ public class GraphicsDisplay extends JPanel {
                     GraphicsDisplay.this.repaint();
                 }
 
+            }
+            if (ev.getButton() == 2) {
+                GraphicsDisplay.this.toShowCoordinates = false;
+                GraphicsDisplay.this.repaint();
             }
         }
     }

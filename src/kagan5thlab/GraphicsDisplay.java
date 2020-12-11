@@ -320,7 +320,26 @@ public class GraphicsDisplay extends JPanel {
             return -1;
         }
     }
+public void saveToArray(double[][] Array)
+{
+    for(int i = 0; i < graphicsData.size()/2; i++)
+    {
+        Array[i][0] = pointToXY(graphicsData.get(i)[0], graphicsData.get(i)[1]).getX();
+    }
+    for(int i = 0; i < graphicsData.size()/2; i++)
+    {
+        Array[i][1] = pointToXY(graphicsData.get(i)[0], graphicsData.get(i)[1]).getY();
+    }
+    for(int i = 0; i < graphicsData.size()/2; i++)
+    {
+        System.out.println(Array[i][0]);
+    }
+    for(int i = 0; i < graphicsData.size()/2; i++)
+    {
+        System.out.println("y=" + Array[i][1]);
+    }
 
+}
     public void reset() {
         this.displayGraphics(this.originalData);
     }

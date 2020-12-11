@@ -107,12 +107,10 @@ public class MainFrame extends JFrame {
     protected void saveToGraphicsFile(File selectedFile) {
         try {
             DataOutputStream out = new DataOutputStream(new FileOutputStream(selectedFile));
-            for(int i = 0; i < data.size(); i++ )
-            {
-                forSaveGraph[i][0] = ;
-            }
+            display.saveToArray(forSaveGraph);
             for(int i = 0; i < data.size(); ++i) {
-                out.writeDouble((Double)this.data.get(i));
+                out.writeDouble((Double)this.forSaveGraph[i][0]);
+                out.writeDouble(this.forSaveGraph[i][1]);
             }
 
             out.close();

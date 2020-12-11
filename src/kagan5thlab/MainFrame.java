@@ -57,7 +57,7 @@ public class MainFrame extends JFrame {
                 MainFrame.this.display.reset();
             }
         };
-        Action saveToGraphicsAction = new AbstractAction("Сохранить данные для построения графика") {
+        Action saveToGraphicsAction = new AbstractAction("Сохранить новые координаты в файл") {
             public void actionPerformed(ActionEvent event) {
                 if (fileChooser == null) {
                     fileChooser = new JFileChooser();

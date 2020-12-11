@@ -59,15 +59,16 @@ public class MainFrame extends JFrame {
         };
         Action saveToGraphicsAction = new AbstractAction("Сохранить данные для построения графика") {
             public void actionPerformed(ActionEvent event) {
-                if (MainFrame.this.fileChooser == null) {
-                    MainFrame.this.fileChooser = new JFileChooser();
-                    MainFrame.this.fileChooser.setCurrentDirectory(new File("."));
+                if (fileChooser == null) {
+                    fileChooser = new JFileChooser();
+                    fileChooser.setCurrentDirectory(new File("."));
                 }
 
-                if (MainFrame.this.fileChooser.showSaveDialog(MainFrame.this) == 0) {
-                }
+                if (fileChooser.showSaveDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
 
-                MainFrame.this.saveToGraphicsFile(MainFrame.this.fileChooser.getSelectedFile());
+
+                    display.saveToTextFile(fileChooser.getSelectedFile());
+                }
             }
         };
         this.saveToGraphicsMenuItem = fileMenu.add(saveToGraphicsAction);
@@ -103,20 +104,6 @@ public class MainFrame extends JFrame {
         } catch (IOException var7) {
             JOptionPane.showMessageDialog(this, "Ошибка чтения координат точек из файла", "Ошибка загрузки данных", 2);
         }
-    }
-    protected void saveToGraphicsFile(File selectedFile) {
-        try {
-            DataOutputStream out = new DataOutputStream(new FileOutputStream(selectedFile));
-            display.saveToArray(forSaveGraph);
-            for(int i = 0; i < data.size(); ++i) {
-                out.writeDouble((Double)this.forSaveGraph[i][0]);
-                out.writeDouble(this.forSaveGraph[i][1]);
-            }
-
-            out.close();
-        } catch (Exception var4) {
-        }
-
     }
 
     public static void main(String[] args) {

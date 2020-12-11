@@ -18,6 +18,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -320,33 +323,30 @@ public class GraphicsDisplay extends JPanel {
             return -1;
         }
     }
-public void saveToArray(double[][] Array)
-{
-    for(int i = 0; i < graphicsData.size()/2; i++)
-    {
-        Array[i][0] = pointToXY(graphicsData.get(i)[0], graphicsData.get(i)[1]).getX();
-    }
-    for(int i = 0; i < graphicsData.size()/2; i++)
-    {
-        Array[i][1] = pointToXY(graphicsData.get(i)[0], graphicsData.get(i)[1]).getY();
-    }
-    for(int i = 0; i < graphicsData.size()/2; i++)
-    {
-        System.out.println(Array[i][0]);
-    }
-    for(int i = 0; i < graphicsData.size()/2; i++)
-    {
-        System.out.println("y=" + Array[i][1]);
-    }
 
-}
     public void reset() {
         this.displayGraphics(this.originalData);
+    }
+    public void saveToTextFile(File selectedFile)	{
+        try{
+            PrintStream out = new PrintStream(selectedFile);
+            out.println("Результаты скорректированых значений");
+            for (Double[] point : graphicsData){
+                out.println(point[0] + " " + point[1]);
+            }
+
+            out.close();
+
+        }catch (FileNotFoundException e){
+
+        }
+
     }
 
     public class MouseHandler extends MouseAdapter {
         public MouseHandler() {
         }
+
 
         public void mouseClicked(MouseEvent ev) {
             if (ev.getButton() == 3) {
